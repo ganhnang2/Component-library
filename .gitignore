@@ -33,8 +33,10 @@ Release/
 # ==========================================
 # Atmel / Microchip Studio & Visual Studio
 .vs/
+*.atsln
 *.atsuo
-*.cproj.user
+*.componentinfo
+*.cproj
 *.suo
 
 # Môi trường Eclipse / STM32CubeIDE
@@ -60,4 +62,5 @@ slprj/
 # 5. FILE HỆ ĐIỀU HÀNH SINH RA
 # ==========================================
 .DS_Store
+Thumbs.db
 Thumbs.db
