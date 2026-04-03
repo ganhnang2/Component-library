@@ -1,0 +1,35 @@
++) CGRAM Address
+	---------------------------------------------------------------------------------
+	|	RS	|	R/W	|	DB7	|	DB6	|	DB5	|	DB4	|	DB3	|	DB2	|	DB1	|	DB0	|
+	---------------------------------------------------------------------------------
+	|	0	|	0	|	0	|	1	|	AC5	|	AC4	|	AC3	|	AC2	|	AC1	|	AC0	|
+	---------------------------------------------------------------------------------
+	DB5:3: Character code 
+	DB2:0: Thứ tự hàng (0, 1, .. 8) của một ký tự
+	
+	NOTE: 
+	+) Khi một ký tự được tạo ra, nó sẽ gán với một character code cố định trong bộ nhớ CGROM (nhìn bảng CGROM trong datasheet)
+	-> Về bản chất thì chúng ta đang tạo ra 1 ký tự với character code trong bảng CGROM đó 
+	(Giống như chữ 'A' có mã ký tự 65 trong bảng mã ASCII)
+	+) Chữ cái được tạo ra (character code:0 -> 7) chỉ có thể được lưu trữ tạm thời trong CGROM. Khi mất nguồn, những ký tự
+	được tạo ra cũng sẽ biến mất!
+	
++) Những ký tự được tạo ra được lưu trữ trong bộ nhớ CGRAM. CGRAM gồm có 64 bytes bộ nhớ.
++) Mỗi ký tự được tạo ra trong CGRAM đều được gán với một character code từ 0 -> 7. 
++) Một character code lại có 8 địa chỉ khác nhau (tương ứng row = 0 ... 8) và mỗi đại chỉ có 8-bit dữ liệu (1 byte)
+Nma trong 8-bit này chỉ cần 5 bit cuối đại diện cho 5 pixel của 1 hàng trong LCD 5x8 dots.
+
+Ví dụ: Tạo ra một hình trái tim có character code = 1
+1. Bây giờ ta đã xác định được character code = 1 -> DB5:3 = 1
+2. Tiếp đến, bạn vẽ hình trái tim ra ô 5x8. Giả sử ta muốn ghi hàng đầu tiên (Row 0) trong ô 5x8 thì DB2:0 = 0
++) Hàng này ta ghi dữ liệu CGRAM Data: 0 1 0 1 0 (0x0A)
++) Sử dụng lệnh Write Data to RAM: DB7:0 = 0x0A
+-> Tổng lại cho ghi hàng 0 của ký tự được tạo ra:
+CGRAM Address có DB7:0 = 01001000 -> DB5:3 = 0 (Character code = 0), DB2:0 = 0 (Row 0 của ký tự 5x8)
+Write Data to RAM có DB7:0 = 00001010 -> DB4:0 = 10 -> Cột/ Pixel chỉ số 1 và 3 sáng (tính từ phải qua trái vs chỉ số bắt đầu 0)
+3. Sau khi thực hiện xong hàng 1 thì con trỏ sẽ tự động nhảy đến hàng 2 (Row 1) của ô chứa ký tự 5x8 mà ko cần Set CGRAM Address.
+-> Khi này ta chỉ cần thực hiện Write Data to RAM là được.
+4. Cứ thế đến hàng thứ 8 (Row 7)
+NOTE: Sau khi thực hiện tạo xong một ký tự thì phải đưa con trỏ trở về vùng nhớ DDRAM để có thể hiển thị được dữ liệu!
+
+Source: Nguyễn Hải Nam
